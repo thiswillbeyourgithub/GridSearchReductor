@@ -23,14 +23,7 @@ setup(
     keywords=["taguchi", "grid-search", "hyperparameter-optimization", "machine-learning", "experiment-design", "parameter-tuning"],
     python_requires=">=3.11",
 
-    entry_points={
-        'console_scripts': [
-            'TaguchiGridSearchConverted=TaguchiGridSearchConverted.__init__:cli_launcher',
-        ],
-    },
-
     install_requires=[
-        'fire >= 0.6.0',
         'beartype >= 0.19.0',
         'numpy >= 1.24.0',
         'scikit-learn >= 1.3.0',
