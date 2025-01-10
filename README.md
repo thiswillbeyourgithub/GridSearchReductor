@@ -1,11 +1,11 @@
 
-# TaguchiGridSearchConverted
+# TaguchiGridSearchConverter
 
 A Python package for optimizing hyperparameter search using Taguchi array principles. Inspired by [NightHawkInLight's video on Taguchi arrays](https://www.youtube.com/watch?v=5oULEuOoRd0&pp=ygUPdGFndXNoaSBhcnJhYXlz).
 
-## Why use TaguchiGridSearchConverted?
+## Why use TaguchiGridSearchConverter?
 
-When tuning machine learning models, traditional grid search can require an exponentially large number of experiments. TaguchiGridSearchConverted helps reduce the number of experiments needed while still effectively exploring the parameter space.
+When tuning machine learning models, traditional grid search can require an exponentially large number of experiments. TaguchiGridSearchConverter helps reduce the number of experiments needed while still effectively exploring the parameter space.
 
 Instead of testing every possible combination of parameters (which can be computationally expensive), this package uses Taguchi array principles to:
 1. Reduce the number of experiments needed
@@ -17,15 +17,15 @@ Instead of testing every possible combination of parameters (which can be comput
 ### Installation
 
 * From PyPI:
-    * Via uv: `uv pip install TaguchiGridSearchConverted`
-    * Via pip: `pip install TaguchiGridSearchConverted`
+    * Via uv: `uv pip install TaguchiGridSearchConverter`
+    * Via pip: `pip install TaguchiGridSearchConverter`
 * From GitHub:
     * Clone this repo then `pip install .`
 
 ### Basic Usage
 
 ```python
-from TaguchiGridSearchConverted import TaguchiGridSearchConverter
+from TaguchiGridSearchConverter import TaguchiGridSearchConverter
 
 # Define your parameter grid
 param_grid = {
