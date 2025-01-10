@@ -91,8 +91,9 @@ if __name__ == "__main__":
     sample_grid = {
         'kernel': ['linear', 'rbf', 'poly'],
         'C': [0.1, 1, 10],
-        'gamma': ['scale', 'auto']
-        'verbose': [True],
+        'gamma': ['scale', 'auto'],
+        'verbose': [True],  # also handles length 1 lists for fixed params
+        'testing': False,  # as well as fixed non iterables
     }
     
     converter = TaguchiGridSearchConverter()
