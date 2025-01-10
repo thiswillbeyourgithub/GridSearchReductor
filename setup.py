@@ -32,6 +32,7 @@ setup(
     install_requires=[
         'fire >= 0.6.0',
         'beartype >= 0.19.0',
-        # TODO_req
+        'numpy >= 1.24.0',
+        'scikit-learn >= 1.3.0',
     ],
 )
