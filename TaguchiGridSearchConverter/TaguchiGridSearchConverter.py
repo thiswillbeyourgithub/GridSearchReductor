@@ -40,10 +40,15 @@ class TaguchiGridSearchConverter:
         variable_params = {}
         
         for param, values in param_grid.items():
-            if isinstance(values, list):
-                variable_params[param] = values
+            # Convert single values to single-item lists
+            if not isinstance(values, (list, tuple)):
+                values = [values]
+                
+            # If it's a single value, treat as fixed parameter
+            if len(values) == 1:
+                fixed_params[param] = values[0]
             else:
-                fixed_params[param] = values
+                variable_params[param] = values
                 
         # Validate we have at least one variable parameter
         if not variable_params:
@@ -87,6 +92,7 @@ if __name__ == "__main__":
         'kernel': ['linear', 'rbf', 'poly'],
         'C': [0.1, 1, 10],
         'gamma': ['scale', 'auto']
+        'verbose': [True],
     }
     
     converter = TaguchiGridSearchConverter()
