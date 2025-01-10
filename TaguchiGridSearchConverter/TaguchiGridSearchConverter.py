@@ -19,16 +19,25 @@ class TaguchiGridSearchConverter:
         Converts a full parameter grid into a reduced set using Taguchi array principles.
         
         Args:
-            param_grid: Dictionary with parameters names (str) as keys and lists of
-                       parameter settings to try as values.
+            param_grid: Either a dictionary with parameters names (str) as keys and lists of
+                       parameter settings to try as values, or a ParameterGrid object.
         
         Returns:
             List of dictionaries with reduced parameter combinations to test.
         
         Raises:
             ValueError: If the parameter grid is empty or contains empty lists
+            TypeError: If the input is neither a dict nor ParameterGrid
         """
-        # Validate input
+        # Convert ParameterGrid to dict if needed
+        if isinstance(param_grid, ParameterGrid):
+            param_grid = param_grid.param_grid
+            
+        # Validate input type
+        if not isinstance(param_grid, dict):
+            raise TypeError("Input must be either a dictionary or ParameterGrid")
+            
+        # Validate input content
         if not param_grid:
             raise ValueError("Parameter grid cannot be empty")
         
