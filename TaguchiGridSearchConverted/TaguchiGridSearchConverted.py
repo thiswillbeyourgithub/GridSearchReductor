@@ -53,5 +53,12 @@ class TaguchiGridSearchConverter:
                 idx = i % len(values)
                 combination[param] = values[idx]
             reduced_grid.append(combination)
+        
+        # Calculate full grid size
+        full_grid_size = len(list(ParameterGrid(param_grid)))
+        
+        # Assert that our reduced grid is indeed smaller
+        assert len(reduced_grid) < full_grid_size, \
+            f"Reduced grid size {len(reduced_grid)} not smaller than full grid size {full_grid_size}"
             
         return reduced_grid
