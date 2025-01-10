@@ -1,9 +1,7 @@
-from beartype import beartype
 from typing import Dict, List, Any
 from sklearn.model_selection import ParameterGrid
 import numpy as np
 
-@beartype  # this will apply to all methods
 class TaguchiGridSearchConverter:
     __VERSION__: str = "0.0.1"
 
