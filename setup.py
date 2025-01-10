@@ -14,14 +14,13 @@ setup(
     url="TODO_URL",
     packages=find_packages(),
 
-    # TODO_check_values
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
     license="GPLv3",
-    keywords=["TODO_keywords"],
+    keywords=["taguchi", "grid-search", "hyperparameter-optimization", "machine-learning", "experiment-design", "parameter-tuning"],
     python_requires=">=3.11",
 
     entry_points={
