@@ -31,7 +31,9 @@ from TaguchiGridSearchConverter import TaguchiGridSearchConverter
 param_grid = {
     'kernel': ['linear', 'rbf', 'poly'],
     'C': [0.1, 1, 10],
-    'gamma': ['scale', 'auto']
+    'gamma': ['scale', 'auto'],
+    'verbose': [True],  # also handles length 1 lists for fixed params
+    'testing': False,  # as well as fixed non iterables
 }
 
 # Create converter instance
