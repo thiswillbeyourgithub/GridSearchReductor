@@ -11,7 +11,7 @@ setup(
     description="Optimize hyperparameter search using Taguchi array principles",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="TODO_URL",
+    url="https://github.com/thiswillbeyourgithub/TaguchiGridSearchConverter.git",
     packages=find_packages(),
 
     classifiers=[
