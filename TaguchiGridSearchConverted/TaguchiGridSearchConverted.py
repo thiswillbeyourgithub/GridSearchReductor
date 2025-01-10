@@ -24,7 +24,18 @@ class TaguchiGridSearchConverter:
         
         Returns:
             List of dictionaries with reduced parameter combinations to test.
+        
+        Raises:
+            ValueError: If the parameter grid is empty or contains empty lists
         """
+        # Validate input
+        if not param_grid:
+            raise ValueError("Parameter grid cannot be empty")
+        
+        for param, values in param_grid.items():
+            if not values:
+                raise ValueError(f"Parameter '{param}' has an empty list of values")
+        
         # Get the number of parameters and their levels
         param_names = list(param_grid.keys())
         levels = [len(values) for values in param_grid.values()]
