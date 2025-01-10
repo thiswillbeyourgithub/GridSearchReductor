@@ -35,17 +35,28 @@ class TaguchiGridSearchConverter:
         if not isinstance(param_grid, dict):
             raise TypeError("Input must be either a dictionary or ParameterGrid")
             
-        # Validate input content
-        if not param_grid:
-            raise ValueError("Parameter grid cannot be empty")
+        # Separate fixed parameters (non-list values) from variable parameters
+        fixed_params = {}
+        variable_params = {}
         
         for param, values in param_grid.items():
+            if isinstance(values, list):
+                variable_params[param] = values
+            else:
+                fixed_params[param] = values
+                
+        # Validate we have at least one variable parameter
+        if not variable_params:
+            raise ValueError("Parameter grid must contain at least one parameter with multiple values")
+            
+        # Validate variable parameters
+        for param, values in variable_params.items():
             if not values:
                 raise ValueError(f"Parameter '{param}' has an empty list of values")
         
         # Get the number of parameters and their levels
-        param_names = list(param_grid.keys())
-        levels = [len(values) for values in param_grid.values()]
+        param_names = list(variable_params.keys())
+        levels = [len(values) for values in variable_params.values()]
         
         # Determine the minimum number of experiments needed
         # Using the maximum number of levels as the base
@@ -54,15 +65,15 @@ class TaguchiGridSearchConverter:
         # Create the reduced parameter combinations
         reduced_grid = []
         for i in range(num_experiments):
-            combination = {}
-            for param, values in param_grid.items():
+            combination = fixed_params.copy()  # Start with fixed parameters
+            for param, values in variable_params.items():
                 # Cycle through values using modulo to ensure we stay within bounds
                 idx = i % len(values)
                 combination[param] = values[idx]
             reduced_grid.append(combination)
         
-        # Calculate full grid size
-        full_grid_size = len(list(ParameterGrid(param_grid)))
+        # Calculate full grid size using only variable parameters
+        full_grid_size = len(list(ParameterGrid(variable_params)))
         
         # Assert that our reduced grid is indeed smaller
         assert len(reduced_grid) < full_grid_size, \
