@@ -1,0 +1,10 @@
+
+**/*pycache*
+**/*egg-info*
+dist/
+
+.env
+.env.leave
+
+
+TODO_gitignore
