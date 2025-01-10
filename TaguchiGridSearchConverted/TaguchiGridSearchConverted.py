@@ -62,3 +62,18 @@ class TaguchiGridSearchConverter:
             f"Reduced grid size {len(reduced_grid)} not smaller than full grid size {full_grid_size}"
             
         return reduced_grid
+
+if __name__ == "__main__":
+    # Example usage without requiring sklearn as a dependency
+    sample_grid = {
+        'kernel': ['linear', 'rbf', 'poly'],
+        'C': [0.1, 1, 10],
+        'gamma': ['scale', 'auto']
+    }
+    
+    converter = TaguchiGridSearchConverter()
+    reduced = converter.convert(sample_grid)
+    
+    print("Reduced parameter combinations:")
+    for i, params in enumerate(reduced, 1):
+        print(f"Combination {i}: {params}")
