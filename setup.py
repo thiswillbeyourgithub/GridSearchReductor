@@ -34,13 +34,4 @@ setup(
         'beartype >= 0.19.0',
         # TODO_req
     ],
-    extra_require={
-    'feature1': [
-        # TODO_req
-        ],
-    'feature2': [
-        # TODO_req
-        ]
-    },
-
 )
