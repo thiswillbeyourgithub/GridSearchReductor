@@ -25,22 +25,26 @@ Instead of testing every possible combination of parameters (which can be comput
 ### Basic Usage
 
 ```python
+from sklearn.model_selection import ParameterGrid
 from TaguchiGridSearchConverter import TaguchiGridSearchConverter
 
-# Define your parameter grid
-param_grid = {
+grid_converter = TaguchiGridSearchConverter()
+
+sample_grid = {
     'kernel': ['linear', 'rbf', 'poly'],
     'C': [0.1, 1, 10],
     'gamma': ['scale', 'auto'],
     'verbose': [True],  # also handles length 1 lists for fixed params
-    'testing': False,  # as well as fixed non iterables
 }
 
-# Create converter instance
-converter = TaguchiGridSearchConverter()
+reduced_grid = grid_converter.convert(sample_grid)
 
-# Get reduced parameter combinations
-reduced_grid = converter.convert(param_grid)
+# or similarly:
+grid = ParameterGrid(sample_grid)
+reduced_grid2 = grid_converter.convert(grid)
+reduced_grid3 = grid_converter.fit_transform(grid)
+
+assert reduced_grid2 == reduced_grid and reduced_grid3 == reduced_grid2
 
 # Use the reduced grid in your experiments
 for params in reduced_grid:
