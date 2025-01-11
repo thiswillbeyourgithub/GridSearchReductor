@@ -30,6 +30,10 @@ class TaguchiGridSearchConverter:
         # Convert ParameterGrid to dict if needed
         if isinstance(param_grid, ParameterGrid):
             param_grid = param_grid.param_grid
+            assert isinstance(param_grid, list) and len(param_grid) == 1, (
+                f"Unexpected param_grid attribute structure: {param_grid}"
+            )
+            param_grid = param_grid[0]
             
         # Validate input type
         if not isinstance(param_grid, dict):
