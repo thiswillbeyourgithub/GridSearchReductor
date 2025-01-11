@@ -3,7 +3,7 @@ from sklearn.model_selection import ParameterGrid
 import numpy as np
 
 class TaguchiGridSearchConverter:
-    __VERSION__: str = "0.2.1"
+    __VERSION__: str = "0.2.2"
 
     def __init__(self) -> None:
         """
