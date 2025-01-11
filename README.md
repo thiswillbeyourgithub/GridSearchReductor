@@ -37,20 +37,49 @@ sample_grid = {
     'verbose': [True],  # also handles length 1 lists for fixed params
 }
 
-reduced_grid = grid_converter.convert(sample_grid)
+full_grid = ParameterGrid(sample_grid)
 
-# or similarly:
-grid = ParameterGrid(sample_grid)
-reduced_grid2 = grid_converter.convert(grid)
-reduced_grid3 = grid_converter.fit_transform(grid)
-
-assert reduced_grid2 == reduced_grid and reduced_grid3 == reduced_grid2
+reduced_grid = grid_converter.fit_transform(sample_grid)
+# Alternative way:
+# reduced_grid = grid_converter.fit_transform(full_grid)
 
 # Use the reduced grid in your experiments
 for params in reduced_grid:
     # Your training/evaluation code here
     print(params)
 ```
+
+In the above experiment, the reduced experiments list is only this:
+```python
+[{'C': 0.1, 'gamma': 'scale', 'kernel': 'linear', 'verbose': True},
+ {'C': 1, 'gamma': 'auto', 'kernel': 'rbf', 'verbose': True},
+ {'C': 10, 'gamma': 'scale', 'kernel': 'poly', 'verbose': True}]
+```
+
+# The full experiments list would have been that long:
+```python
+[{'C': 0.1, 'gamma': 'scale', 'kernel': 'linear', 'verbose': True},
+ {'C': 0.1, 'gamma': 'scale', 'kernel': 'rbf', 'verbose': True},
+ {'C': 0.1, 'gamma': 'scale', 'kernel': 'poly', 'verbose': True},
+ {'C': 0.1, 'gamma': 'auto', 'kernel': 'linear', 'verbose': True},
+ {'C': 0.1, 'gamma': 'auto', 'kernel': 'rbf', 'verbose': True},
+ {'C': 0.1, 'gamma': 'auto', 'kernel': 'poly', 'verbose': True},
+ {'C': 1, 'gamma': 'scale', 'kernel': 'linear', 'verbose': True},
+ {'C': 1, 'gamma': 'scale', 'kernel': 'rbf', 'verbose': True},
+ {'C': 1, 'gamma': 'scale', 'kernel': 'poly', 'verbose': True},
+ {'C': 1, 'gamma': 'auto', 'kernel': 'linear', 'verbose': True},
+ {'C': 1, 'gamma': 'auto', 'kernel': 'rbf', 'verbose': True},
+ {'C': 1, 'gamma': 'auto', 'kernel': 'poly', 'verbose': True},
+ {'C': 10, 'gamma': 'scale', 'kernel': 'linear', 'verbose': True},
+ {'C': 10, 'gamma': 'scale', 'kernel': 'rbf', 'verbose': True},
+ {'C': 10, 'gamma': 'scale', 'kernel': 'poly', 'verbose': True},
+ {'C': 10, 'gamma': 'auto', 'kernel': 'linear', 'verbose': True},
+ {'C': 10, 'gamma': 'auto', 'kernel': 'rbf', 'verbose': True},
+ {'C': 10, 'gamma': 'auto', 'kernel': 'poly', 'verbose': True}]
+```
+
+So only 3 experiments instead of 18!
+
 
 ## How it works
 
