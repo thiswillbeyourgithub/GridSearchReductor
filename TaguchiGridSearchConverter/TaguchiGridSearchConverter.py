@@ -90,6 +90,8 @@ class TaguchiGridSearchConverter:
             
         return reduced_grid
 
+TaguchiGridSearchConverter.fit_transform = TaguchiGridSearchConverter.convert
+
 if __name__ == "__main__":
     # Example usage without requiring sklearn as a dependency
     sample_grid = {
@@ -97,12 +99,19 @@ if __name__ == "__main__":
         'C': [0.1, 1, 10],
         'gamma': ['scale', 'auto'],
         'verbose': [True],  # also handles length 1 lists for fixed params
-        'testing': False,  # as well as fixed non iterables
     }
     
     converter = TaguchiGridSearchConverter()
     reduced = converter.convert(sample_grid)
-    
+
+    # or similarly:
+    from sklearn.model_selection import ParameterGrid
+    grid = ParameterGrid(sample_grid)
+    reduced2 = converter.convert(grid)
+    reduced3 = converter.fit_transform(grid)
+
+    assert reduced2 == reduced and reduced3 == reduced2
+
     print("Reduced parameter combinations:")
     for i, params in enumerate(reduced, 1):
         print(f"Combination {i}: {params}")
