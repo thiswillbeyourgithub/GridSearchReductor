@@ -1,4 +1,4 @@
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Union
 from sklearn.model_selection import ParameterGrid
 import numpy as np
 
@@ -12,7 +12,7 @@ class TaguchiGridSearchConverter:
         """
         pass
 
-    def fit_transform(self, param_grid: Dict[str, List[Any]]) -> List[Dict[str, Any]]:
+    def fit_transform(self, param_grid: Union[Dict[str, List[Any]], ParameterGrid]) -> List[Dict[str, Any]]:
         """
         Converts a full parameter grid into a reduced set using Taguchi array principles.
         
@@ -105,9 +105,9 @@ if __name__ == "__main__":
     # or similarly:
     from sklearn.model_selection import ParameterGrid
     grid = ParameterGrid(sample_grid)
-    reduced2 = converter.convert(grid)
+    reduced2 = converter.fit_transform(grid)
 
-    assert reduced2 == reduced and reduced3 == reduced2
+    assert reduced2 == reduced
 
     print("Reduced parameter combinations:")
     for i, params in enumerate(reduced, 1):
