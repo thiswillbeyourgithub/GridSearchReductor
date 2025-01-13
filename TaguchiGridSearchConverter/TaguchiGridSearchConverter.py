@@ -1,16 +1,22 @@
 from typing import Dict, List, Any, Union
 from sklearn.model_selection import ParameterGrid
 import numpy as np
+import logging
 
 class TaguchiGridSearchConverter:
-    __VERSION__: str = "0.2.4"
+    __VERSION__: str = "0.2.5"
 
-    def __init__(self) -> None:
+    def __init__(self, verbose: bool = False) -> None:
         """
         Initializes a Taguchi Grid Search Converter.
         This class helps optimize hyperparameter search using Taguchi arrays.
+
+        Args:
+            verbose: If True, enables debug logging
         """
-        pass
+        self.logger = logging.getLogger(__name__)
+        if verbose:
+            logging.basicConfig(level=logging.DEBUG)
 
     def fit_transform(self, param_grid: Union[Dict[str, List[Any]], ParameterGrid]) -> List[Dict[str, Any]]:
         """
@@ -37,7 +43,14 @@ class TaguchiGridSearchConverter:
             
         # Validate input type
         if not isinstance(param_grid, dict):
+            self.logger.error("Input must be either a dictionary or ParameterGrid")
             raise TypeError("Input must be either a dictionary or ParameterGrid")
+            
+        # Validate parameter names are strings
+        for param in param_grid.keys():
+            if not isinstance(param, str):
+                self.logger.error(f"Parameter name '{param}' is not a string")
+                raise TypeError(f"Parameter name '{param}' must be a string")
             
         # Separate fixed parameters (non-list values) from variable parameters
         fixed_params = {}
@@ -61,7 +74,11 @@ class TaguchiGridSearchConverter:
         # Validate variable parameters
         for param, values in variable_params.items():
             if not values:
+                self.logger.error(f"Parameter '{param}' has an empty list of values")
                 raise ValueError(f"Parameter '{param}' has an empty list of values")
+            if not isinstance(values, (list, tuple)):
+                self.logger.error(f"Parameter '{param}' values must be a list or tuple")
+                raise TypeError(f"Parameter '{param}' values must be a list or tuple")
         
         # Get the number of parameters and their levels
         param_names = list(variable_params.keys())
@@ -73,13 +90,20 @@ class TaguchiGridSearchConverter:
         
         # Create the reduced parameter combinations
         reduced_grid = []
+        self.logger.debug(f"Creating reduced grid with {num_experiments} experiments")
+        
         for i in range(num_experiments):
             combination = fixed_params.copy()  # Start with fixed parameters
+            self.logger.debug(f"Creating combination {i+1}")
+            
             for param, values in variable_params.items():
                 # Cycle through values using modulo to ensure we stay within bounds
                 idx = i % len(values)
                 combination[param] = values[idx]
+                self.logger.debug(f"  {param} = {values[idx]} (index {idx})")
+                
             reduced_grid.append(combination)
+            self.logger.debug(f"Combination {i+1} complete: {combination}")
         
         # Calculate full grid size using only variable parameters
         full_grid_size = len(list(ParameterGrid(variable_params)))
