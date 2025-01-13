@@ -3,7 +3,11 @@
 
 A Python package for optimizing hyperparameter search using Taguchi array principles. Inspired by [NightHawkInLight's video on Taguchi arrays](https://www.youtube.com/watch?v=5oULEuOoRd0&pp=ygUPdGFndXNoaSBhcnJhYXlz).
 
+**Do fewer experiments than grid search, but do the right ones using Taguchi orthogonal arrays!**
+
 ## Why use TaguchiGridSearchConverter?
+
+This library is designed to work seamlessly with scikit-learn's ParameterGrid, providing a drop-in replacement that can significantly reduce your hyperparameter search space.
 
 When tuning machine learning models, traditional grid search can require an exponentially large number of experiments. TaguchiGridSearchConverter helps reduce the number of experiments needed while still effectively exploring the parameter space.
 
