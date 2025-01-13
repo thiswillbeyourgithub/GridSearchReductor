@@ -92,18 +92,35 @@ class TaguchiGridSearchConverter:
         reduced_grid = []
         self.logger.debug(f"Creating reduced grid with {num_experiments} experiments")
         
+        # Create set to track seen combinations
+        seen_combinations = set()
+        
+        # Generate full ParameterGrid for validation
+        full_grid = list(ParameterGrid(variable_params))
+        
         for i in range(num_experiments):
-            combination = fixed_params.copy()  # Start with fixed parameters
+            combination = fixed_params.copy()
             self.logger.debug(f"Creating combination {i+1}")
             
             for param, values in variable_params.items():
-                # Cycle through values using modulo to ensure we stay within bounds
                 idx = i % len(values)
                 combination[param] = values[idx]
                 self.logger.debug(f"  {param} = {values[idx]} (index {idx})")
                 
-            reduced_grid.append(combination)
-            self.logger.debug(f"Combination {i+1} complete: {combination}")
+            # Create hashable version of combination for duplicate checking
+            combination_tuple = tuple(sorted((k, v) for k, v in combination.items()))
+            
+            # Validate combination exists in full grid and isn't a duplicate
+            if combination_tuple not in seen_combinations:
+                # Check if combination exists in full grid
+                if combination in full_grid:
+                    reduced_grid.append(combination)
+                    seen_combinations.add(combination_tuple)
+                    self.logger.debug(f"Combination {i+1} complete: {combination}")
+                else:
+                    self.logger.warning(f"Invalid combination skipped: {combination}")
+            else:
+                self.logger.debug(f"Duplicate combination skipped: {combination}")
         
         # Calculate full grid size using only variable parameters
         full_grid_size = len(list(ParameterGrid(variable_params)))
