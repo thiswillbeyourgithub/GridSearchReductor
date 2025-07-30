@@ -15,12 +15,12 @@ def reset_logging():
     """
     # Store original level
     original_level = logging.getLogger().level
-    
+
     yield
-    
+
     # Reset to original level after test
     logging.getLogger().setLevel(original_level)
-    
+
     # Clear any handlers that might have been added
     logger = logging.getLogger()
     logger.handlers.clear()
@@ -33,9 +33,9 @@ def sample_param_grid():
     This reduces code duplication across tests.
     """
     return {
-        'kernel': ['linear', 'rbf', 'poly'],
-        'C': [0.1, 1, 10],
-        'gamma': ['scale', 'auto'],
+        "kernel": ["linear", "rbf", "poly"],
+        "C": [0.1, 1, 10],
+        "gamma": ["scale", "auto"],
     }
 
 
@@ -46,10 +46,10 @@ def complex_param_grid():
     Includes mixed types and edge cases.
     """
     return {
-        'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute'],
-        'n_neighbors': [3, 5, 7, 9, 11],
-        'weights': ['uniform', 'distance'],
-        'metric': ['euclidean', 'manhattan', 'minkowski'],
-        'p': [1, 2],
-        'leaf_size': [10, 30, 50],
+        "algorithm": ["auto", "ball_tree", "kd_tree", "brute"],
+        "n_neighbors": [3, 5, 7, 9, 11],
+        "weights": ["uniform", "distance"],
+        "metric": ["euclidean", "manhattan", "minkowski"],
+        "p": [1, 2],
+        "leaf_size": [10, 30, 50],
     }
