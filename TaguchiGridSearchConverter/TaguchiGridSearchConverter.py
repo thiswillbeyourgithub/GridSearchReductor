@@ -90,8 +90,14 @@ class TaguchiGridSearchConverter:
         levels = [len(values) for values in variable_params.values()]
 
         # Determine the minimum number of experiments needed
-        # Using the maximum number of levels as the base
-        num_experiments = max(levels)
+        # For Taguchi reduction, use a strategy that ensures actual reduction
+        max_levels = max(levels)
+        if len(levels) == 1:  # Only one variable parameter
+            # For single parameter, use approximately half the levels (minimum 2)
+            num_experiments = max(2, max_levels // 2)
+        else:
+            # For multiple parameters, use the maximum levels as base
+            num_experiments = max_levels
 
         # Create the reduced parameter combinations
         reduced_grid = []
