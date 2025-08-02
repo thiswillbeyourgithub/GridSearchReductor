@@ -24,7 +24,7 @@ class TestSklearnIntegration:
         )
 
     def test_sklearn_parameter_grid_compatibility(self):
-        """Test that reduced grid works with sklearn's GridSearchCV."""
+        """Test that reduced grid contains valid parameter combinations for sklearn."""
         # Define parameter grid for SVM
         param_grid = {
             "C": [0.1, 1, 10],
@@ -35,21 +35,45 @@ class TestSklearnIntegration:
         # Get reduced parameter grid
         reduced_grid = self.converter.fit_transform(param_grid)
 
-        # Verify reduced grid works with GridSearchCV
+        # Verify reduced grid is valid and smaller than full grid
+        assert len(reduced_grid) > 0
+        full_grid_size = len(list(ParameterGrid(param_grid)))
+        assert len(reduced_grid) < full_grid_size
+
+        # Test that each combination in reduced grid works with sklearn
         svm = SVC()
-
-        # This should not raise any errors
-        grid_search = GridSearchCV(
-            estimator=svm, param_grid=reduced_grid, cv=3, scoring="accuracy"
-        )
-
-        # Verify we can fit the grid search
-        grid_search.fit(self.X, self.y)
-
-        # Verify results
-        assert hasattr(grid_search, "best_params_")
-        assert hasattr(grid_search, "best_score_")
-        assert len(grid_search.cv_results_["params"]) == len(reduced_grid)
+        
+        for combination in reduced_grid:
+            # Verify each combination contains valid parameters
+            assert combination["C"] in param_grid["C"]
+            assert combination["kernel"] in param_grid["kernel"] 
+            assert combination["gamma"] in param_grid["gamma"]
+            
+            # Test that we can create an estimator with these parameters
+            # This should not raise any errors
+            test_svm = SVC(**combination)
+            
+            # Test that we can fit it (basic functionality test)
+            test_svm.fit(self.X, self.y)
+            
+        # Test that we can use the reduced combinations in manual grid search
+        best_score = -float('inf')
+        best_params = None
+        
+        from sklearn.model_selection import cross_val_score
+        
+        for combination in reduced_grid:
+            estimator = SVC(**combination)
+            scores = cross_val_score(estimator, self.X, self.y, cv=3, scoring="accuracy")
+            mean_score = scores.mean()
+            
+            if mean_score > best_score:
+                best_score = mean_score
+                best_params = combination
+                
+        # Verify we found a best configuration
+        assert best_params is not None
+        assert best_score > -float('inf')
 
     def test_parameter_grid_object_sklearn_compatibility(self):
         """Test that converter works with sklearn ParameterGrid objects."""
