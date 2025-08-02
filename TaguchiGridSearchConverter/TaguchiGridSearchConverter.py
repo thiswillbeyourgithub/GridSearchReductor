@@ -112,8 +112,9 @@ class TaguchiGridSearchConverter:
             
             # Validate combination exists in full grid and isn't a duplicate
             if combination_tuple not in seen_combinations:
-                # Check if combination exists in full grid
-                if combination in full_grid:
+                # Extract only variable parameters for validation against full grid
+                variable_combination = {k: v for k, v in combination.items() if k in variable_params}
+                if variable_combination in full_grid:
                     reduced_grid.append(combination)
                     seen_combinations.add(combination_tuple)
                     self.logger.debug(f"Combination {i+1} complete: {combination}")
