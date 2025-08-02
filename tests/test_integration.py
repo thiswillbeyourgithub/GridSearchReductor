@@ -42,38 +42,40 @@ class TestSklearnIntegration:
 
         # Test that each combination in reduced grid works with sklearn
         svm = SVC()
-        
+
         for combination in reduced_grid:
             # Verify each combination contains valid parameters
             assert combination["C"] in param_grid["C"]
-            assert combination["kernel"] in param_grid["kernel"] 
+            assert combination["kernel"] in param_grid["kernel"]
             assert combination["gamma"] in param_grid["gamma"]
-            
+
             # Test that we can create an estimator with these parameters
             # This should not raise any errors
             test_svm = SVC(**combination)
-            
+
             # Test that we can fit it (basic functionality test)
             test_svm.fit(self.X, self.y)
-            
+
         # Test that we can use the reduced combinations in manual grid search
-        best_score = -float('inf')
+        best_score = -float("inf")
         best_params = None
-        
+
         from sklearn.model_selection import cross_val_score
-        
+
         for combination in reduced_grid:
             estimator = SVC(**combination)
-            scores = cross_val_score(estimator, self.X, self.y, cv=3, scoring="accuracy")
+            scores = cross_val_score(
+                estimator, self.X, self.y, cv=3, scoring="accuracy"
+            )
             mean_score = scores.mean()
-            
+
             if mean_score > best_score:
                 best_score = mean_score
                 best_params = combination
-                
+
         # Verify we found a best configuration
         assert best_params is not None
-        assert best_score > -float('inf')
+        assert best_score > -float("inf")
 
     def test_parameter_grid_object_sklearn_compatibility(self):
         """Test that converter works with sklearn ParameterGrid objects."""
