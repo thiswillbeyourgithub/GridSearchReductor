@@ -6,7 +6,7 @@ import joblib
 
 
 class TaguchiGridSearchConverter:
-    __VERSION__: str = "0.2.5"
+    __VERSION__: str = "0.2.6"
 
     def __init__(self, verbose: bool = False) -> None:
         """

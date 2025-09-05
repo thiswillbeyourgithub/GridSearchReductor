@@ -7,7 +7,7 @@ with open("README.md", "r") as readme:
 
 setup(
     name="TaguchiGridSearchConverter",
-    version="0.2.5",
+    version="0.2.6",
     description="Optimize hyperparameter search using Taguchi array principles",
     long_description=long_description,
     long_description_content_type="text/markdown",
