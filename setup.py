@@ -1,4 +1,3 @@
-
 from setuptools import setup, find_packages
 from setuptools.command.install import install
 
@@ -13,19 +12,27 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/thiswillbeyourgithub/GridSearchReductor.git",
     packages=find_packages(),
-
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
     license="GPLv3",
-    keywords=["latin-hypercube", "sampling", "grid-search", "hyperparameter-optimization", "machine-learning", "experiment-design", "parameter-tuning", "space-filling", "stratified-sampling"],
+    keywords=[
+        "latin-hypercube",
+        "sampling",
+        "grid-search",
+        "hyperparameter-optimization",
+        "machine-learning",
+        "experiment-design",
+        "parameter-tuning",
+        "space-filling",
+        "stratified-sampling",
+    ],
     python_requires=">=3.11",
-
     install_requires=[
-        'numpy >= 1.24.0',
-        'scikit-learn >= 1.3.0',
-        'joblib',
+        "numpy >= 1.24.0",
+        "scikit-learn >= 1.3.0",
+        "joblib",
     ],
 )
