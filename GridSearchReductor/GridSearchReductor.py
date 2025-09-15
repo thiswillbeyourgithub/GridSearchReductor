@@ -129,10 +129,10 @@ class GridSearchReductor:
 
         # Determine the number of experiments using LHS strategy for good coverage
         full_grid_size = np.prod(levels)
-        
+
         # For effective reduction, use approximately square root of full grid size
         target_samples = max(2, int(np.sqrt(full_grid_size)))
-        
+
         # Ensure we have reasonable coverage - at least a few samples per variable parameter
         min_samples = 2 * len(variable_params)
         target_samples = max(target_samples, min_samples)
