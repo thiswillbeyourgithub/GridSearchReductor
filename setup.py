@@ -6,12 +6,12 @@ with open("README.md", "r") as readme:
     long_description = readme.read()
 
 setup(
-    name="TaguchiGridSearchConverter",
+    name="GridSearchReductor",
     version="0.2.6",
     description="Optimize hyperparameter search using Taguchi array principles",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/thiswillbeyourgithub/TaguchiGridSearchConverter.git",
+    url="https://github.com/thiswillbeyourgithub/GridSearchReductor.git",
     packages=find_packages(),
 
     classifiers=[

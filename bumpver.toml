@@ -12,5 +12,5 @@ push = false
 [bumpver.file_patterns]
 "bumpver.toml" = ['current_version = "{version}"']
 "setup.py" = ['version="{version}"']
-"TaguchiGridSearchConverter/TaguchiGridSearchConverter.py" = ['__VERSION__: str = "{version}"']
+"GridSearchReductor/GridSearchReductor.py" = ['__VERSION__: str = "{version}"']
 
