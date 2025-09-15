@@ -6,7 +6,7 @@ with open("README.md", "r") as readme:
 
 setup(
     name="GridSearchReductor",
-    version="1.0.0",
+    version="1.0.1",
     description="Reduce hyperparameter search space using stratified sampling (on top of a ParameterGrid)",
     long_description=long_description,
     long_description_content_type="text/markdown",
