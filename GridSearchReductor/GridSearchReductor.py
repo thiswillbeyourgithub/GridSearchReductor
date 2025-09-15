@@ -32,7 +32,16 @@ class GridSearchReductor:
         self.reduction_factor = reduction_factor
         self.logger = logging.getLogger(__name__)
         if verbose:
-            logging.basicConfig(level=logging.DEBUG)
+            # Set the logger level directly instead of using basicConfig
+            # which might not work if logging is already configured
+            self.logger.setLevel(logging.DEBUG)
+            # Ensure there's a handler if none exists
+            if not self.logger.handlers:
+                handler = logging.StreamHandler()
+                handler.setLevel(logging.DEBUG)
+                formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
+                handler.setFormatter(formatter)
+                self.logger.addHandler(handler)
 
         # Initialize random number generator for reproducible sampling
         self.random_state = np.random.RandomState(random_state)
