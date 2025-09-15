@@ -213,9 +213,9 @@ class TestGridSearchReductor:
         """Test that verbose mode produces debug logs."""
         # Use a larger parameter grid that will actually trigger LHS reduction
         param_grid = {
-            "kernel": ["linear", "rbf", "poly", "sigmoid"], 
+            "kernel": ["linear", "rbf", "poly", "sigmoid"],
             "C": [0.1, 1.0, 10.0, 100.0],
-            "gamma": ["scale", "auto", 0.01, 0.1]
+            "gamma": ["scale", "auto", 0.01, 0.1],
         }
 
         with caplog.at_level(logging.DEBUG):
