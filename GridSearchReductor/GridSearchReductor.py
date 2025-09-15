@@ -64,38 +64,40 @@ class GridSearchReductor:
             Array of shape (num_samples, num_dimensions) with values in [0, 1]
         """
         samples = np.zeros((num_samples, num_dimensions))
-        
+
         # Determine number of strata - balance between coverage and flexibility
         num_strata = max(2, min(num_samples, int(np.sqrt(num_samples * 2))))
-        
+
         for dim in range(num_dimensions):
             # Create strata boundaries
             strata_boundaries = np.linspace(0, 1, num_strata + 1)
-            
+
             # Calculate samples per stratum
             base_samples_per_stratum = num_samples // num_strata
             extra_samples = num_samples % num_strata
-            
+
             dimension_samples = []
-            
+
             for i in range(num_strata):
                 stratum_start = strata_boundaries[i]
                 stratum_end = strata_boundaries[i + 1]
-                
+
                 # Number of samples for this stratum
-                stratum_sample_count = base_samples_per_stratum + (1 if i < extra_samples else 0)
-                
+                stratum_sample_count = base_samples_per_stratum + (
+                    1 if i < extra_samples else 0
+                )
+
                 # Generate random samples within this stratum
                 if stratum_sample_count > 0:
                     stratum_width = stratum_end - stratum_start
                     random_offsets = self.random_state.random(stratum_sample_count)
                     stratum_samples = stratum_start + random_offsets * stratum_width
                     dimension_samples.extend(stratum_samples)
-            
+
             # Shuffle to remove any ordering bias
             self.random_state.shuffle(dimension_samples)
             samples[:, dim] = np.array(dimension_samples)
-        
+
         return samples
 
     def fit_transform(
@@ -236,9 +238,13 @@ class GridSearchReductor:
             if combination_hash not in seen_combinations:
                 reduced_grid.append(combination)
                 seen_combinations.add(combination_hash)
-                self.logger.debug(f"Stratified combination {i+1} complete: {combination}")
+                self.logger.debug(
+                    f"Stratified combination {i+1} complete: {combination}"
+                )
             else:
-                self.logger.debug(f"Duplicate stratified combination skipped: {combination}")
+                self.logger.debug(
+                    f"Duplicate stratified combination skipped: {combination}"
+                )
 
         # Calculate full grid size using only variable parameters for validation
         full_grid_size_check = len(list(ParameterGrid(variable_params)))
