@@ -9,7 +9,7 @@ class GridSearchReductor:
     __VERSION__: str = "0.3.2"
 
     def __init__(
-        self, verbose: bool = False, random_state: Union[int, None] = 42
+        self, verbose: bool = False, random_state: Union[int, None] = 42, reduction_factor: float = 0.2
     ) -> None:
         """
         Initializes a Grid Search Reductor.
@@ -18,7 +18,13 @@ class GridSearchReductor:
         Args:
             verbose: If True, enables debug logging
             random_state: Random seed for reproducible results. Defaults to 42 for deterministic behavior. If None, uses global random state.
+            reduction_factor: Fraction of the full parameter grid to sample. Must be > 0 and < 1, and must result in actual reduction.
         """
+        # Validate reduction_factor
+        if reduction_factor <= 0 or reduction_factor >= 1:
+            raise ValueError(f"reduction_factor must be between 0 and 1 (exclusive), got {reduction_factor}")
+        
+        self.reduction_factor = reduction_factor
         self.logger = logging.getLogger(__name__)
         if verbose:
             logging.basicConfig(level=logging.DEBUG)
@@ -127,18 +133,25 @@ class GridSearchReductor:
         param_names = list(variable_params.keys())
         levels = [len(values) for values in variable_params.values()]
 
-        # Determine the number of experiments using LHS strategy for good coverage
+        # Determine the number of experiments using reduction_factor
         full_grid_size = np.prod(levels)
 
-        # For effective reduction, use approximately square root of full grid size
-        target_samples = max(2, int(np.sqrt(full_grid_size)))
+        # Calculate target samples based on reduction_factor
+        target_samples = max(2, int(full_grid_size * self.reduction_factor))
 
         # Ensure we have reasonable coverage - at least a few samples per variable parameter
         min_samples = 2 * len(variable_params)
         target_samples = max(target_samples, min_samples)
 
-        # Ensure we actually reduce the grid size (leave at least one combination out)
-        num_experiments = min(target_samples, full_grid_size - 1)
+        # Validate that we actually achieve reduction
+        if target_samples >= full_grid_size:
+            raise ValueError(
+                f"reduction_factor {self.reduction_factor} results in {target_samples} samples, "
+                f"which is not less than the full grid size of {full_grid_size}. "
+                f"Use a smaller reduction_factor to achieve actual reduction."
+            )
+
+        num_experiments = target_samples
 
         self.logger.debug(
             f"Creating LHS reduced grid with {num_experiments} experiments"
