@@ -16,7 +16,7 @@ class GridSearchReductor:
     ) -> None:
         """
         Initializes a Grid Search Reductor.
-        This class helps optimize hyperparameter search using Latin Hypercube Sampling.
+        This class helps optimize hyperparameter search using stratified random sampling.
 
         Args:
             verbose: If True, enables debug logging
@@ -46,14 +46,15 @@ class GridSearchReductor:
         # Initialize random number generator for reproducible sampling
         self.random_state = np.random.RandomState(random_state)
 
-    def _generate_latin_hypercube_samples(
+    def _generate_stratified_samples(
         self, num_dimensions: int, num_samples: int
     ) -> np.ndarray:
         """
-        Generate Latin Hypercube Samples without scipy dependency.
+        Generate stratified random samples.
 
-        LHS ensures each parameter dimension is divided into equally probable intervals
-        with one sample per interval, providing better coverage than random sampling.
+        Stratified sampling divides each parameter dimension into strata and samples
+        proportionally from each stratum, ensuring better coverage across the parameter space
+        while being more flexible than Latin Hypercube Sampling.
 
         Args:
             num_dimensions: Number of parameter dimensions
@@ -62,19 +63,39 @@ class GridSearchReductor:
         Returns:
             Array of shape (num_samples, num_dimensions) with values in [0, 1]
         """
-        # Create equally spaced intervals for each dimension
         samples = np.zeros((num_samples, num_dimensions))
-
+        
+        # Determine number of strata - balance between coverage and flexibility
+        num_strata = max(2, min(num_samples, int(np.sqrt(num_samples * 2))))
+        
         for dim in range(num_dimensions):
-            # Create intervals [0, 1/n, 2/n, ..., (n-1)/n] and add random jitter
-            intervals = np.arange(num_samples) / num_samples
-            jitter = self.random_state.random(num_samples) / num_samples
-            dimension_samples = intervals + jitter
-
-            # Shuffle to ensure Latin Hypercube property
+            # Create strata boundaries
+            strata_boundaries = np.linspace(0, 1, num_strata + 1)
+            
+            # Calculate samples per stratum
+            base_samples_per_stratum = num_samples // num_strata
+            extra_samples = num_samples % num_strata
+            
+            dimension_samples = []
+            
+            for i in range(num_strata):
+                stratum_start = strata_boundaries[i]
+                stratum_end = strata_boundaries[i + 1]
+                
+                # Number of samples for this stratum
+                stratum_sample_count = base_samples_per_stratum + (1 if i < extra_samples else 0)
+                
+                # Generate random samples within this stratum
+                if stratum_sample_count > 0:
+                    stratum_width = stratum_end - stratum_start
+                    random_offsets = self.random_state.random(stratum_sample_count)
+                    stratum_samples = stratum_start + random_offsets * stratum_width
+                    dimension_samples.extend(stratum_samples)
+            
+            # Shuffle to remove any ordering bias
             self.random_state.shuffle(dimension_samples)
-            samples[:, dim] = dimension_samples
-
+            samples[:, dim] = np.array(dimension_samples)
+        
         return samples
 
     def fit_transform(
@@ -178,7 +199,7 @@ class GridSearchReductor:
         num_experiments = target_samples
 
         self.logger.debug(
-            f"Creating LHS reduced grid with {num_experiments} experiments"
+            f"Creating stratified reduced grid with {num_experiments} experiments"
         )
         self.logger.debug(
             f"Parameter levels: {levels}, full grid size: {full_grid_size}"
@@ -187,19 +208,19 @@ class GridSearchReductor:
             f"Target samples: {target_samples}, min samples: {min_samples}"
         )
 
-        # Generate Latin Hypercube Samples in [0,1] space
+        # Generate stratified samples in [0,1] space
         num_dimensions = len(param_names)
-        lhs_samples = self._generate_latin_hypercube_samples(
+        stratified_samples = self._generate_stratified_samples(
             num_dimensions, num_experiments
         )
 
-        # Convert LHS samples to discrete parameter indices
+        # Convert stratified samples to discrete parameter indices
         reduced_grid = []
         seen_combinations = set()
 
-        for i, sample in enumerate(lhs_samples):
+        for i, sample in enumerate(stratified_samples):
             combination = fixed_params.copy()
-            self.logger.debug(f"Creating LHS combination {i+1}")
+            self.logger.debug(f"Creating stratified combination {i+1}")
 
             for j, param in enumerate(param_names):
                 values = variable_params[param]
@@ -208,16 +229,16 @@ class GridSearchReductor:
                 # Ensure idx is within bounds (handle edge case where sample == 1.0)
                 idx = min(idx, len(values) - 1)
                 combination[param] = values[idx]
-                self.logger.debug(f"  {param} = {values[idx]} (LHS index {idx})")
+                self.logger.debug(f"  {param} = {values[idx]} (stratified index {idx})")
 
             # Check for duplicates using hash
             combination_hash = joblib.hash(combination)
             if combination_hash not in seen_combinations:
                 reduced_grid.append(combination)
                 seen_combinations.add(combination_hash)
-                self.logger.debug(f"LHS combination {i+1} complete: {combination}")
+                self.logger.debug(f"Stratified combination {i+1} complete: {combination}")
             else:
-                self.logger.debug(f"Duplicate LHS combination skipped: {combination}")
+                self.logger.debug(f"Duplicate stratified combination skipped: {combination}")
 
         # Calculate full grid size using only variable parameters for validation
         full_grid_size_check = len(list(ParameterGrid(variable_params)))
@@ -225,7 +246,7 @@ class GridSearchReductor:
         # Assert that our reduced grid is indeed smaller than the full grid
         assert (
             len(reduced_grid) < full_grid_size_check
-        ), f"LHS reduced grid size {len(reduced_grid)} not smaller than full grid size {full_grid_size_check}"
+        ), f"Stratified reduced grid size {len(reduced_grid)} not smaller than full grid size {full_grid_size_check}"
 
         return reduced_grid
 
