@@ -8,17 +8,21 @@ import joblib
 class GridSearchReductor:
     __VERSION__: str = "0.3.0"
 
-    def __init__(self, verbose: bool = False) -> None:
+    def __init__(self, verbose: bool = False, random_state: int = None) -> None:
         """
         Initializes a Grid Search Reductor.
         This class helps optimize hyperparameter search using Latin Hypercube Sampling.
 
         Args:
             verbose: If True, enables debug logging
+            random_state: Random seed for reproducible results. If None, uses global random state.
         """
         self.logger = logging.getLogger(__name__)
         if verbose:
             logging.basicConfig(level=logging.DEBUG)
+        
+        # Initialize random number generator for reproducible sampling
+        self.random_state = np.random.RandomState(random_state)
 
     def _generate_latin_hypercube_samples(
         self, num_dimensions: int, num_samples: int
@@ -42,11 +46,11 @@ class GridSearchReductor:
         for dim in range(num_dimensions):
             # Create intervals [0, 1/n, 2/n, ..., (n-1)/n] and add random jitter
             intervals = np.arange(num_samples) / num_samples
-            jitter = np.random.random(num_samples) / num_samples
+            jitter = self.random_state.random(num_samples) / num_samples
             dimension_samples = intervals + jitter
 
             # Shuffle to ensure Latin Hypercube property
-            np.random.shuffle(dimension_samples)
+            self.random_state.shuffle(dimension_samples)
             samples[:, dim] = dimension_samples
 
         return samples

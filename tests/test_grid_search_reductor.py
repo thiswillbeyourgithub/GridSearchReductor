@@ -18,15 +18,23 @@ class TestGridSearchReductor:
         """Test initialization with default parameters."""
         converter = GridSearchReductor()
         assert hasattr(converter, "logger")
+        assert hasattr(converter, "random_state")
         assert converter.logger.name == "GridSearchReductor.GridSearchReductor"
 
     def test_init_verbose(self):
         """Test initialization with verbose=True."""
         converter = GridSearchReductor(verbose=True)
         assert hasattr(converter, "logger")
+        assert hasattr(converter, "random_state")
         # Verify that verbose initialization completed successfully
         # Note: logging.basicConfig() may not change root logger level if already configured
         assert converter.logger is not None
+
+    def test_init_with_random_state(self):
+        """Test initialization with random_state parameter."""
+        converter = GridSearchReductor(random_state=42)
+        assert hasattr(converter, "random_state")
+        assert converter.random_state.get_state()[1][0] == 42  # Verify seed was set
 
     def test_version_attribute(self):
         """Test that version attribute is accessible."""
@@ -96,11 +104,14 @@ class TestGridSearchReductor:
             "verbose": [True],  # Fixed parameter as single-item list
         }
 
-        reduced = self.converter.fit_transform(sample_grid)
+        # Use fixed random state for deterministic results
+        converter_deterministic = GridSearchReductor(random_state=42)
+        reduced = converter_deterministic.fit_transform(sample_grid)
 
-        # Test with ParameterGrid object as well
+        # Test with ParameterGrid object as well using same random state
+        converter_deterministic2 = GridSearchReductor(random_state=42)
         grid = ParameterGrid(sample_grid)
-        reduced2 = self.converter.fit_transform(grid)
+        reduced2 = converter_deterministic2.fit_transform(grid)
 
         assert reduced2 == reduced
         assert len(reduced) > 0
