@@ -1,5 +1,5 @@
 """
-Integration tests for TaguchiGridSearchConverter.
+Integration tests for GridSearchReductor.
 These tests verify the converter works correctly with sklearn components.
 """
 
@@ -9,7 +9,7 @@ from sklearn.svm import SVC
 from sklearn.datasets import make_classification
 from sklearn.model_selection import GridSearchCV
 
-from TaguchiGridSearchConverter import TaguchiGridSearchConverter
+from GridSearchReductor import GridSearchReductor
 
 
 class TestSklearnIntegration:
@@ -17,7 +17,7 @@ class TestSklearnIntegration:
 
     def setup_method(self):
         """Set up test data and converter."""
-        self.converter = TaguchiGridSearchConverter()
+        self.converter = GridSearchReductor()
         # Create a small dataset for testing
         self.X, self.y = make_classification(
             n_samples=100, n_features=20, n_classes=2, random_state=42

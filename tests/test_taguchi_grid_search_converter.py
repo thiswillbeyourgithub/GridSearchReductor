@@ -3,29 +3,29 @@ import logging
 from typing import Dict, List, Any
 from sklearn.model_selection import ParameterGrid
 
-from TaguchiGridSearchConverter import TaguchiGridSearchConverter
+from GridSearchReductor import GridSearchReductor
 
 
-class TestTaguchiGridSearchConverter:
-    """Test suite for TaguchiGridSearchConverter class."""
+class TestGridSearchReductor:
+    """Test suite for GridSearchReductor class."""
 
     def setup_method(self):
         """Set up test fixtures before each test method."""
-        self.converter = TaguchiGridSearchConverter(verbose=False)
-        self.converter_verbose = TaguchiGridSearchConverter(verbose=True)
+        self.converter = GridSearchReductor(verbose=False)
+        self.converter_verbose = GridSearchReductor(verbose=True)
 
     def test_init_default(self):
         """Test initialization with default parameters."""
-        converter = TaguchiGridSearchConverter()
+        converter = GridSearchReductor()
         assert hasattr(converter, "logger")
         assert (
             converter.logger.name
-            == "TaguchiGridSearchConverter.TaguchiGridSearchConverter"
+            == "GridSearchReductor.GridSearchReductor"
         )
 
     def test_init_verbose(self):
         """Test initialization with verbose=True."""
-        converter = TaguchiGridSearchConverter(verbose=True)
+        converter = GridSearchReductor(verbose=True)
         assert hasattr(converter, "logger")
         # Verify that verbose initialization completed successfully
         # Note: logging.basicConfig() may not change root logger level if already configured
@@ -33,9 +33,9 @@ class TestTaguchiGridSearchConverter:
 
     def test_version_attribute(self):
         """Test that version attribute is accessible."""
-        assert hasattr(TaguchiGridSearchConverter, "__VERSION__")
-        assert isinstance(TaguchiGridSearchConverter.__VERSION__, str)
-        assert TaguchiGridSearchConverter.__VERSION__ == "0.2.5"
+        assert hasattr(GridSearchReductor, "__VERSION__")
+        assert isinstance(GridSearchReductor.__VERSION__, str)
+        assert GridSearchReductor.__VERSION__ == "0.3.0"
 
     def test_basic_parameter_grid_dict(self):
         """Test fit_transform with basic dictionary parameter grid."""
@@ -209,7 +209,7 @@ class TestTaguchiGridSearchConverter:
             record.message for record in caplog.records if record.levelname == "DEBUG"
         ]
         assert len(debug_messages) > 0
-        assert any("Creating reduced grid" in msg for msg in debug_messages)
+        assert any("Creating LHS reduced grid" in msg for msg in debug_messages)
 
 
 class TestEdgeCases:
@@ -217,7 +217,7 @@ class TestEdgeCases:
 
     def setup_method(self):
         """Set up test fixtures."""
-        self.converter = TaguchiGridSearchConverter()
+        self.converter = GridSearchReductor()
 
     def test_parameter_grid_with_none_values(self):
         """Test parameter grid containing None values."""
