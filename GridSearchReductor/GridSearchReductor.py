@@ -6,7 +6,7 @@ import joblib
 
 
 class GridSearchReductor:
-    __VERSION__: str = "0.3.2"
+    __VERSION__: str = "0.3.3"
 
     def __init__(
         self,
