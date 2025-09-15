@@ -1,9 +1,19 @@
 """
 Integration tests for GridSearchReductor.
+
 These tests verify the converter works correctly with sklearn components.
+The integration tests ensure that:
+1. Reduced parameter grids are compatible with sklearn estimators
+2. Parameter combinations are valid and can be used for model training
+3. The converter maintains sklearn's ParameterGrid interface contract
+4. Real-world hyperparameter optimization scenarios work as expected
+
+This file was developed with assistance from aider.chat.
 """
 
 import pytest
+from typing import Tuple, Any
+import numpy as np
 from sklearn.model_selection import ParameterGrid
 from sklearn.svm import SVC
 from sklearn.datasets import make_classification
@@ -13,18 +23,48 @@ from GridSearchReductor import GridSearchReductor
 
 
 class TestSklearnIntegration:
-    """Test integration with sklearn components."""
+    """
+    Test integration with sklearn components.
+    
+    This test class verifies that GridSearchReductor produces parameter combinations
+    that are fully compatible with sklearn's ecosystem, ensuring seamless integration
+    for hyperparameter optimization workflows.
+    """
 
-    def setup_method(self):
-        """Set up test data and converter."""
-        self.converter = GridSearchReductor()
-        # Create a small dataset for testing
+    def setup_method(self) -> None:
+        """
+        Set up test data and converter for each test method.
+        
+        Creates a deterministic test environment with:
+        - A GridSearchReductor instance with default settings for reproducible results
+        - A synthetic classification dataset suitable for SVM testing
+        - Fixed random state to ensure test reproducibility across runs
+        
+        The small dataset size (100 samples) is chosen to make tests run quickly
+        while still being sufficient to validate sklearn integration.
+        """
+        self.converter: GridSearchReductor = GridSearchReductor()
+        # Create a small dataset for testing - small size ensures fast test execution
+        # while maintaining statistical validity for integration testing
+        self.X: np.ndarray
+        self.y: np.ndarray
         self.X, self.y = make_classification(
             n_samples=100, n_features=20, n_classes=2, random_state=42
         )
 
-    def test_sklearn_parameter_grid_compatibility(self):
-        """Test that reduced grid contains valid parameter combinations for sklearn."""
+    def test_sklearn_parameter_grid_compatibility(self) -> None:
+        """
+        Test that reduced grid contains valid parameter combinations for sklearn.
+        
+        This test verifies that:
+        1. The reduced grid is smaller than the full grid (actual reduction occurs)
+        2. Each parameter combination contains valid values from the original grid
+        3. sklearn estimators can be instantiated and trained with each combination
+        4. Manual hyperparameter search using reduced combinations works correctly
+        
+        The test uses SVM as the target estimator because it has diverse parameter types
+        (continuous, categorical, and boolean-like) that thoroughly test compatibility.
+        """
         # Define parameter grid for SVM
         param_grid = {
             "C": [0.1, 1, 10],
@@ -77,8 +117,22 @@ class TestSklearnIntegration:
         assert best_params is not None
         assert best_score > -float("inf")
 
-    def test_parameter_grid_object_sklearn_compatibility(self):
-        """Test that converter works with sklearn ParameterGrid objects."""
+    def test_parameter_grid_object_sklearn_compatibility(self) -> None:
+        """
+        Test that converter works with sklearn ParameterGrid objects.
+        
+        This test ensures the converter can accept ParameterGrid objects as input,
+        maintaining API compatibility with sklearn's hyperparameter search ecosystem.
+        
+        The test validates that:
+        1. ParameterGrid objects are accepted as input without modification
+        2. The converter extracts parameter dictionaries correctly from ParameterGrid
+        3. Output parameter combinations are valid and use values from original grid
+        4. Reduction still occurs when using ParameterGrid input format
+        
+        Using a parameter grid with kernel-specific parameters (degree for poly)
+        tests handling of conditional parameter dependencies.
+        """
         param_dict = {
             "C": [0.1, 1, 10, 100],
             "kernel": ["linear", "rbf", "poly"],
@@ -101,8 +155,21 @@ class TestSklearnIntegration:
             assert combo["kernel"] in param_dict["kernel"]
             assert combo["degree"] in param_dict["degree"]
 
-    def test_real_world_hyperparameter_optimization(self):
-        """Test with a realistic hyperparameter optimization scenario."""
+    def test_real_world_hyperparameter_optimization(self) -> None:
+        """
+        Test with a realistic hyperparameter optimization scenario.
+        
+        This test simulates a real-world hyperparameter optimization workflow with:
+        1. A comprehensive parameter grid with multiple dimensions and many values
+        2. Verification that significant reduction is achieved (>50% fewer combinations)
+        3. Validation that parameter space coverage is maintained despite reduction
+        4. Confirmation that diverse parameter values are still represented
+        
+        The large parameter grid (7×4×4×6×4 = 2688 combinations) tests the converter's
+        ability to handle high-dimensional parameter spaces typical in production ML.
+        The test ensures Latin Hypercube Sampling provides good coverage across all
+        parameter dimensions even with aggressive reduction.
+        """
         # Define a comprehensive parameter grid
         param_grid = {
             "C": [0.001, 0.01, 0.1, 1, 10, 100, 1000],
