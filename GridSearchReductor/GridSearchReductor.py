@@ -9,7 +9,10 @@ class GridSearchReductor:
     __VERSION__: str = "0.3.2"
 
     def __init__(
-        self, verbose: bool = False, random_state: Union[int, None] = 42, reduction_factor: float = 0.2
+        self,
+        verbose: bool = False,
+        random_state: Union[int, None] = 42,
+        reduction_factor: float = 0.2,
     ) -> None:
         """
         Initializes a Grid Search Reductor.
@@ -22,8 +25,10 @@ class GridSearchReductor:
         """
         # Validate reduction_factor
         if reduction_factor <= 0 or reduction_factor >= 1:
-            raise ValueError(f"reduction_factor must be between 0 and 1 (exclusive), got {reduction_factor}")
-        
+            raise ValueError(
+                f"reduction_factor must be between 0 and 1 (exclusive), got {reduction_factor}"
+            )
+
         self.reduction_factor = reduction_factor
         self.logger = logging.getLogger(__name__)
         if verbose:
