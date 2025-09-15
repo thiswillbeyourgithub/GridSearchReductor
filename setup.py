@@ -8,7 +8,7 @@ with open("README.md", "r") as readme:
 setup(
     name="GridSearchReductor",
     version="0.3.0",
-    description="Optimize hyperparameter search using Taguchi array principles",
+    description="Optimize hyperparameter search using Latin Hypercube Sampling principles",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/thiswillbeyourgithub/GridSearchReductor.git",
@@ -20,11 +20,12 @@ setup(
         "Operating System :: OS Independent",
     ],
     license="GPLv3",
-    keywords=["taguchi", "latin", "hypercube", "sampling", "grid-search", "hyperparameter-optimization", "machine-learning", "experiment-design", "parameter-tuning"],
+    keywords=["latin-hypercube", "sampling", "grid-search", "hyperparameter-optimization", "machine-learning", "experiment-design", "parameter-tuning", "space-filling", "stratified-sampling"],
     python_requires=">=3.11",
 
     install_requires=[
         'numpy >= 1.24.0',
         'scikit-learn >= 1.3.0',
+        'joblib',
     ],
 )
