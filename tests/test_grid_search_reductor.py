@@ -75,7 +75,7 @@ class TestGridSearchReductor:
 
         assert isinstance(result, list)
         assert len(result) > 0
-        
+
         # Should handle ParameterGrid object same as dict with same random state
         converter_deterministic2 = GridSearchReductor(random_state=42)
         result_from_dict = converter_deterministic2.fit_transform(param_dict)
