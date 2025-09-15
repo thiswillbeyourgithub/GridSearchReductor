@@ -226,7 +226,7 @@ class TestGridSearchReductor:
             record.message for record in caplog.records if record.levelname == "DEBUG"
         ]
         assert len(debug_messages) > 0
-        assert any("Creating LHS reduced grid" in msg for msg in debug_messages)
+        assert any("Creating stratified reduced grid" in msg for msg in debug_messages)
 
 
 class TestEdgeCases:

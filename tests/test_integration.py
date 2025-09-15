@@ -167,7 +167,7 @@ class TestSklearnIntegration:
 
         The large parameter grid (7×4×4×6×4 = 2688 combinations) tests the converter's
         ability to handle high-dimensional parameter spaces typical in production ML.
-        The test ensures Latin Hypercube Sampling provides good coverage across all
+        The test ensures stratified sampling provides good coverage across all
         parameter dimensions even with aggressive reduction.
         """
         # Define a comprehensive parameter grid
