@@ -69,12 +69,16 @@ class TestGridSearchReductor:
         param_dict = {"kernel": ["linear", "rbf", "poly"], "C": [0.1, 1, 10]}
         param_grid_obj = ParameterGrid(param_dict)
 
-        result = self.converter.fit_transform(param_grid_obj)
+        # Use deterministic random state for reproducible results
+        converter_deterministic = GridSearchReductor(random_state=42)
+        result = converter_deterministic.fit_transform(param_grid_obj)
 
         assert isinstance(result, list)
         assert len(result) > 0
-        # Should handle ParameterGrid object same as dict
-        result_from_dict = self.converter.fit_transform(param_dict)
+        
+        # Should handle ParameterGrid object same as dict with same random state
+        converter_deterministic2 = GridSearchReductor(random_state=42)
+        result_from_dict = converter_deterministic2.fit_transform(param_dict)
         assert result == result_from_dict
 
     def test_fixed_parameters_single_values(self):
