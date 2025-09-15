@@ -20,7 +20,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     license="GPLv3",
-    keywords=["taguchi", "grid-search", "hyperparameter-optimization", "machine-learning", "experiment-design", "parameter-tuning"],
+    keywords=["taguchi", "latin", "hypercube", "sampling", "grid-search", "hyperparameter-optimization", "machine-learning", "experiment-design", "parameter-tuning"],
     python_requires=">=3.11",
 
     install_requires=[
