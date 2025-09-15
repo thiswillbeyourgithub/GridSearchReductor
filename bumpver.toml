@@ -13,4 +13,6 @@ push = false
 "bumpver.toml" = ['current_version = "{version}"']
 "setup.py" = ['version="{version}"']
 "GridSearchReductor/GridSearchReductor.py" = ['__VERSION__: str = "{version}"']
+"tests/test_grid_search_reductor.py" = ['assert GridSearchReductor.__VERSION__ == "{version}"']
+
 
