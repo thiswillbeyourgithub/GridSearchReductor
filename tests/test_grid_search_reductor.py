@@ -40,7 +40,7 @@ class TestGridSearchReductor:
         """Test that version attribute is accessible."""
         assert hasattr(GridSearchReductor, "__VERSION__")
         assert isinstance(GridSearchReductor.__VERSION__, str)
-        assert GridSearchReductor.__VERSION__ == "0.3.3"
+        assert GridSearchReductor.__VERSION__ == "1.0.0"
 
     def test_basic_parameter_grid_dict(self):
         """Test fit_transform with basic dictionary parameter grid."""

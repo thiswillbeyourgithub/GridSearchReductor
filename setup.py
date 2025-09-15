@@ -6,7 +6,7 @@ with open("README.md", "r") as readme:
 
 setup(
     name="GridSearchReductor",
-    version="0.3.3",
+    version="1.0.0",
     description="Optimize hyperparameter search using Latin Hypercube Sampling principles",
     long_description=long_description,
     long_description_content_type="text/markdown",
