@@ -1,6 +1,6 @@
 # GridSearchReductor
 
-A Python package for optimizing hyperparameter search using Latin Hypercube Sampling principles. 
+A Python package for optimizing hyperparameter search using Latin Hypercube Sampling principles.
 
 **Do fewer experiments than grid search, but do the right ones using Latin Hypercube Sampling!**
 
@@ -107,5 +107,5 @@ This approach is particularly useful when:
 
 ---
 
-*This project was developed with assistance from [aider.chat](https://github.com/Aider-AI/aider/).*
+*This project was almost purely vibecoded with assistance from [aider.chat](https://github.com/Aider-AI/aider/).*
 
