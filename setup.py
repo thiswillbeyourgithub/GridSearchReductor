@@ -7,7 +7,7 @@ with open("README.md", "r") as readme:
 setup(
     name="GridSearchReductor",
     version="1.0.0",
-    description="Optimize hyperparameter search using Latin Hypercube Sampling principles",
+    description="Reduce hyperparameter search space using stratified sampling (on top of a ParameterGrid)",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/thiswillbeyourgithub/GridSearchReductor.git",
@@ -19,9 +19,10 @@ setup(
     ],
     license="GPLv3",
     keywords=[
-        "latin-hypercube",
+        "stratified",
         "sampling",
         "grid-search",
+        "optimization",
         "hyperparameter-optimization",
         "machine-learning",
         "experiment-design",
