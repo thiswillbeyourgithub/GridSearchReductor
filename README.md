@@ -38,7 +38,11 @@ Instead of testing every possible combination of parameters (which can be comput
 from sklearn.model_selection import ParameterGrid
 from GridSearchReductor import GridSearchReductor
 
+# Default uses 20% of the full grid size
 grid_converter = GridSearchReductor()
+
+# Or specify a custom reduction factor (must be between 0 and 1)
+grid_converter = GridSearchReductor(reduction_factor=0.1)  # Use 10% of full grid
 
 sample_grid = {
     'kernel': ['linear', 'rbf', 'poly'],
@@ -61,7 +65,7 @@ for params in reduced_grid:
 
 The reduced experiments list will be significantly smaller than the full grid while maintaining good parameter space coverage through Latin Hypercube Sampling.
 
-The full experiments list would have been 18 combinations (3×3×2×1), but the reduced grid provides effective coverage with fewer experiments!
+The full experiments list would have been 18 combinations (3×3×2×1), but the reduced grid provides effective coverage with fewer experiments! By default, GridSearchReductor uses 20% of the full grid size, so this example would generate approximately 3-4 experiments instead of 18.
 
 ## Advanced Usage
 
@@ -83,6 +87,27 @@ grid_converter = GridSearchReductor(random_state=None)
 reduced_grid = grid_converter.fit_transform(sample_grid)
 ```
 
+### Controlling Reduction Factor
+
+The `reduction_factor` parameter controls what fraction of the full parameter grid to sample:
+
+```python
+# Use 10% of the full grid (more aggressive reduction)
+grid_converter = GridSearchReductor(reduction_factor=0.1)
+
+# Use 30% of the full grid (less aggressive reduction)
+grid_converter = GridSearchReductor(reduction_factor=0.3)
+
+# Default is 20% of the full grid
+grid_converter = GridSearchReductor()  # Same as reduction_factor=0.2
+```
+
+**Important notes about `reduction_factor`:**
+- Must be between 0 and 1 (exclusive)
+- The actual number of samples will be at least `2 * number_of_variable_parameters` to ensure reasonable coverage
+- The reduction must result in fewer samples than the full grid, otherwise a ValueError is raised
+- Smaller values mean fewer experiments but potentially less thorough parameter space exploration
+
 ### Verbose Logging
 
 ```python
@@ -96,10 +121,11 @@ reduced_grid = grid_converter.fit_transform(sample_grid)
 The converter takes a parameter grid (similar to scikit-learn's ParameterGrid) and:
 1. Separates fixed parameters (single values) from variable parameters
 2. Determines the number of levels for each variable parameter
-3. Generates Latin Hypercube Samples in normalized [0,1] space
-4. Maps these samples to discrete parameter indices
-5. Creates a reduced set ensuring uniform coverage across all parameter dimensions
-6. Removes duplicate combinations and ensures the result is smaller than the full grid
+3. Calculates the target number of samples based on the `reduction_factor` (default 20% of full grid)
+4. Generates Latin Hypercube Samples in normalized [0,1] space
+5. Maps these samples to discrete parameter indices
+6. Creates a reduced set ensuring uniform coverage across all parameter dimensions
+7. Removes duplicate combinations and ensures the result is smaller than the full grid
 
 ### Latin Hypercube Sampling Benefits
 
