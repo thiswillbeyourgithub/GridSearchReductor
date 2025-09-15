@@ -211,7 +211,12 @@ class TestGridSearchReductor:
 
     def test_verbose_logging(self, caplog):
         """Test that verbose mode produces debug logs."""
-        param_grid = {"kernel": ["linear", "rbf"], "C": [0.1, 1.0]}
+        # Use a larger parameter grid that will actually trigger LHS reduction
+        param_grid = {
+            "kernel": ["linear", "rbf", "poly", "sigmoid"], 
+            "C": [0.1, 1.0, 10.0, 100.0],
+            "gamma": ["scale", "auto", 0.01, 0.1]
+        }
 
         with caplog.at_level(logging.DEBUG):
             result = self.converter_verbose.fit_transform(param_grid)
