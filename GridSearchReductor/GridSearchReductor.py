@@ -25,7 +25,7 @@ class GridSearchReductor:
     ) -> np.ndarray:
         """
         Generate Latin Hypercube Samples without scipy dependency.
-        
+
         LHS ensures each parameter dimension is divided into equally probable intervals
         with one sample per interval, providing better coverage than random sampling.
 
@@ -38,17 +38,17 @@ class GridSearchReductor:
         """
         # Create equally spaced intervals for each dimension
         samples = np.zeros((num_samples, num_dimensions))
-        
+
         for dim in range(num_dimensions):
             # Create intervals [0, 1/n, 2/n, ..., (n-1)/n] and add random jitter
             intervals = np.arange(num_samples) / num_samples
             jitter = np.random.random(num_samples) / num_samples
             dimension_samples = intervals + jitter
-            
+
             # Shuffle to ensure Latin Hypercube property
             np.random.shuffle(dimension_samples)
             samples[:, dim] = dimension_samples
-            
+
         return samples
 
     def fit_transform(
@@ -125,33 +125,39 @@ class GridSearchReductor:
         # LHS requires num_samples <= min parameter levels to ensure all values are reachable
         max_levels = max(levels)
         min_levels = min(levels)
-        
+
         # For effective reduction, use approximately square root of full grid size
         # but ensure it's feasible given discrete parameter constraints
         full_grid_size = np.prod(levels)
         target_samples = max(2, int(np.sqrt(full_grid_size)))
-        
+
         # Constrain by minimum parameter levels to ensure all discrete values are reachable
         num_experiments = min(target_samples, min_levels)
-        
+
         # Ensure we actually reduce the grid size
         num_experiments = min(num_experiments, full_grid_size - 1)
-        
-        self.logger.debug(f"Creating LHS reduced grid with {num_experiments} experiments")
-        self.logger.debug(f"Parameter levels: {levels}, full grid size: {full_grid_size}")
+
+        self.logger.debug(
+            f"Creating LHS reduced grid with {num_experiments} experiments"
+        )
+        self.logger.debug(
+            f"Parameter levels: {levels}, full grid size: {full_grid_size}"
+        )
 
         # Generate Latin Hypercube Samples in [0,1] space
         num_dimensions = len(param_names)
-        lhs_samples = self._generate_latin_hypercube_samples(num_dimensions, num_experiments)
-        
+        lhs_samples = self._generate_latin_hypercube_samples(
+            num_dimensions, num_experiments
+        )
+
         # Convert LHS samples to discrete parameter indices
         reduced_grid = []
         seen_combinations = set()
-        
+
         for i, sample in enumerate(lhs_samples):
             combination = fixed_params.copy()
             self.logger.debug(f"Creating LHS combination {i+1}")
-            
+
             for j, param in enumerate(param_names):
                 values = variable_params[param]
                 # Map [0,1] sample to discrete parameter index
@@ -160,7 +166,7 @@ class GridSearchReductor:
                 idx = min(idx, len(values) - 1)
                 combination[param] = values[idx]
                 self.logger.debug(f"  {param} = {values[idx]} (LHS index {idx})")
-            
+
             # Check for duplicates using hash
             combination_hash = joblib.hash(combination)
             if combination_hash not in seen_combinations:
