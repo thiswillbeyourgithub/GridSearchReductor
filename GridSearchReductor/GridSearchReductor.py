@@ -155,7 +155,16 @@ class GridSearchReductor:
                 f"with reduction_factor {self.reduction_factor}. Returning full grid."
             )
             # Return the full parameter grid when reduction isn't beneficial
-            return list(ParameterGrid(variable_params if not fixed_params else {**variable_params, **{k: [v] for k, v in fixed_params.items()}}))
+            return list(
+                ParameterGrid(
+                    variable_params
+                    if not fixed_params
+                    else {
+                        **variable_params,
+                        **{k: [v] for k, v in fixed_params.items()},
+                    }
+                )
+            )
 
         num_experiments = target_samples
 
