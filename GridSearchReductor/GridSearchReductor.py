@@ -128,26 +128,26 @@ class GridSearchReductor:
         levels = [len(values) for values in variable_params.values()]
 
         # Determine the number of experiments using LHS strategy for good coverage
-        # LHS requires num_samples <= min parameter levels to ensure all values are reachable
-        max_levels = max(levels)
-        min_levels = min(levels)
-
-        # For effective reduction, use approximately square root of full grid size
-        # but ensure it's feasible given discrete parameter constraints
         full_grid_size = np.prod(levels)
+        
+        # For effective reduction, use approximately square root of full grid size
         target_samples = max(2, int(np.sqrt(full_grid_size)))
+        
+        # Ensure we have reasonable coverage - at least a few samples per variable parameter
+        min_samples = 2 * len(variable_params)
+        target_samples = max(target_samples, min_samples)
 
-        # Constrain by minimum parameter levels to ensure all discrete values are reachable
-        num_experiments = min(target_samples, min_levels)
-
-        # Ensure we actually reduce the grid size
-        num_experiments = min(num_experiments, full_grid_size - 1)
+        # Ensure we actually reduce the grid size (leave at least one combination out)
+        num_experiments = min(target_samples, full_grid_size - 1)
 
         self.logger.debug(
             f"Creating LHS reduced grid with {num_experiments} experiments"
         )
         self.logger.debug(
             f"Parameter levels: {levels}, full grid size: {full_grid_size}"
+        )
+        self.logger.debug(
+            f"Target samples: {target_samples}, min samples: {min_samples}"
         )
 
         # Generate Latin Hypercube Samples in [0,1] space
