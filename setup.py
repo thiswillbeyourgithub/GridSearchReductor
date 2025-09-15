@@ -7,7 +7,7 @@ with open("README.md", "r") as readme:
 
 setup(
     name="GridSearchReductor",
-    version="0.2.6",
+    version="0.3.0",
     description="Optimize hyperparameter search using Taguchi array principles",
     long_description=long_description,
     long_description_content_type="text/markdown",
