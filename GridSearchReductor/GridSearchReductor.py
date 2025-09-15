@@ -39,7 +39,7 @@ class GridSearchReductor:
             if not self.logger.handlers:
                 handler = logging.StreamHandler()
                 handler.setLevel(logging.DEBUG)
-                formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
+                formatter = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
                 handler.setFormatter(formatter)
                 self.logger.addHandler(handler)
 
