@@ -148,13 +148,14 @@ class GridSearchReductor:
         min_samples = 2 * len(variable_params)
         target_samples = max(target_samples, min_samples)
 
-        # Validate that we actually achieve reduction
+        # Handle case where meaningful reduction isn't possible
         if target_samples >= full_grid_size:
-            raise ValueError(
-                f"reduction_factor {self.reduction_factor} results in {target_samples} samples, "
-                f"which is not less than the full grid size of {full_grid_size}. "
-                f"Use a smaller reduction_factor to achieve actual reduction."
+            self.logger.debug(
+                f"Parameter grid is too small ({full_grid_size} combinations) for meaningful reduction "
+                f"with reduction_factor {self.reduction_factor}. Returning full grid."
             )
+            # Return the full parameter grid when reduction isn't beneficial
+            return list(ParameterGrid(variable_params if not fixed_params else {**variable_params, **{k: [v] for k, v in fixed_params.items()}}))
 
         num_experiments = target_samples
 
