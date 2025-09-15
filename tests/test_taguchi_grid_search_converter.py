@@ -18,10 +18,7 @@ class TestGridSearchReductor:
         """Test initialization with default parameters."""
         converter = GridSearchReductor()
         assert hasattr(converter, "logger")
-        assert (
-            converter.logger.name
-            == "GridSearchReductor.GridSearchReductor"
-        )
+        assert converter.logger.name == "GridSearchReductor.GridSearchReductor"
 
     def test_init_verbose(self):
         """Test initialization with verbose=True."""
