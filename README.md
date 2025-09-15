@@ -20,6 +20,7 @@ Instead of testing every possible combination of parameters (which can be comput
 2. Maintain excellent coverage of the parameter space through stratified sampling
 3. Ensure each parameter dimension is sampled uniformly
 4. Provide better space-filling properties than random sampling
+5. **Generate deterministic results by default** - the same parameter grid will always produce the same reduced combinations
 
 ## Getting started
 
@@ -66,9 +67,19 @@ The full experiments list would have been 18 combinations (3×3×2×1), but the 
 
 ### Reproducible Results
 
+GridSearchReductor is **deterministic by default** (using `random_state=42`). The same parameter grid will always produce the same reduced combinations.
+
 ```python
-# Use random_state for reproducible results
-grid_converter = GridSearchReductor(random_state=42)
+# Default behavior - deterministic results
+grid_converter = GridSearchReductor()
+reduced_grid = grid_converter.fit_transform(sample_grid)
+
+# Use a different random_state if needed
+grid_converter = GridSearchReductor(random_state=123)
+reduced_grid = grid_converter.fit_transform(sample_grid)
+
+# Use global random state (non-deterministic)
+grid_converter = GridSearchReductor(random_state=None)
 reduced_grid = grid_converter.fit_transform(sample_grid)
 ```
 
