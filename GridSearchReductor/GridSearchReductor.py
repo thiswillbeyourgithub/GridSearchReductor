@@ -20,7 +20,7 @@ class GridSearchReductor:
         self.logger = logging.getLogger(__name__)
         if verbose:
             logging.basicConfig(level=logging.DEBUG)
-        
+
         # Initialize random number generator for reproducible sampling
         self.random_state = np.random.RandomState(random_state)
 
