@@ -4,6 +4,9 @@
 
 A Python package for optimizing hyperparameter search using Latin Hypercube Sampling principles.
 
+Inspired by [NightHawkInLight's video on Taguchi arrays](https://www.youtube.com/watch?v=5oULEuOoRd0&pp=ygUPdGFndXNoaSBhcnJhYXlz).
+
+
 **Do fewer experiments than grid search, but do the right ones using Latin Hypercube Sampling!**
 
 ## Why use GridSearchReductor?
