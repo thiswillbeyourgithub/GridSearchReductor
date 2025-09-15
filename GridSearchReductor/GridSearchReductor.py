@@ -8,7 +8,9 @@ import joblib
 class GridSearchReductor:
     __VERSION__: str = "0.3.0"
 
-    def __init__(self, verbose: bool = False, random_state: Union[int, None] = 42) -> None:
+    def __init__(
+        self, verbose: bool = False, random_state: Union[int, None] = 42
+    ) -> None:
         """
         Initializes a Grid Search Reductor.
         This class helps optimize hyperparameter search using Latin Hypercube Sampling.
