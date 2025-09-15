@@ -1,5 +1,7 @@
 # GridSearchReductor
 
+> **⚠️ Disclaimer**: This project was almost purely vibecoded with assistance from [aider.chat](https://github.com/Aider-AI/aider/). While it includes comprehensive pytest tests, the author doesn't have the mathematical expertise to verify that the Latin Hypercube Sampling implementation is mathematically sound. Use at your own discretion for production workloads.
+
 A Python package for optimizing hyperparameter search using Latin Hypercube Sampling principles.
 
 **Do fewer experiments than grid search, but do the right ones using Latin Hypercube Sampling!**
