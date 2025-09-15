@@ -5,13 +5,13 @@ import logging
 import joblib
 
 
-class TaguchiGridSearchConverter:
-    __VERSION__: str = "0.2.6"
+class GridSearchReductor:
+    __VERSION__: str = "0.3.0"
 
     def __init__(self, verbose: bool = False) -> None:
         """
-        Initializes a Taguchi Grid Search Converter.
-        This class helps optimize hyperparameter search using Taguchi arrays.
+        Initializes a Grid Search Reductor.
+        This class helps optimize hyperparameter search using Latin Hypercube Sampling.
 
         Args:
             verbose: If True, enables debug logging
@@ -20,11 +20,42 @@ class TaguchiGridSearchConverter:
         if verbose:
             logging.basicConfig(level=logging.DEBUG)
 
+    def _generate_latin_hypercube_samples(
+        self, num_dimensions: int, num_samples: int
+    ) -> np.ndarray:
+        """
+        Generate Latin Hypercube Samples without scipy dependency.
+        
+        LHS ensures each parameter dimension is divided into equally probable intervals
+        with one sample per interval, providing better coverage than random sampling.
+
+        Args:
+            num_dimensions: Number of parameter dimensions
+            num_samples: Number of samples to generate
+
+        Returns:
+            Array of shape (num_samples, num_dimensions) with values in [0, 1]
+        """
+        # Create equally spaced intervals for each dimension
+        samples = np.zeros((num_samples, num_dimensions))
+        
+        for dim in range(num_dimensions):
+            # Create intervals [0, 1/n, 2/n, ..., (n-1)/n] and add random jitter
+            intervals = np.arange(num_samples) / num_samples
+            jitter = np.random.random(num_samples) / num_samples
+            dimension_samples = intervals + jitter
+            
+            # Shuffle to ensure Latin Hypercube property
+            np.random.shuffle(dimension_samples)
+            samples[:, dim] = dimension_samples
+            
+        return samples
+
     def fit_transform(
         self, param_grid: Union[Dict[str, List[Any]], ParameterGrid]
     ) -> List[Dict[str, Any]]:
         """
-        Converts a full parameter grid into a reduced set using Taguchi array principles.
+        Converts a full parameter grid into a reduced set using Latin Hypercube Sampling.
 
         Args:
             param_grid: Either a dictionary with parameters names (str) as keys and lists of
@@ -90,60 +121,62 @@ class TaguchiGridSearchConverter:
         param_names = list(variable_params.keys())
         levels = [len(values) for values in variable_params.values()]
 
-        # Determine the minimum number of experiments needed
-        # For Taguchi reduction, use a strategy that ensures actual reduction
+        # Determine the number of experiments using LHS strategy for good coverage
+        # LHS requires num_samples <= min parameter levels to ensure all values are reachable
         max_levels = max(levels)
-        if len(levels) == 1:  # Only one variable parameter
-            # For single parameter, use approximately half the levels (minimum 2)
-            num_experiments = max(2, max_levels // 2)
-        else:
-            # For multiple parameters, use the maximum levels as base
-            num_experiments = max_levels
+        min_levels = min(levels)
+        
+        # For effective reduction, use approximately square root of full grid size
+        # but ensure it's feasible given discrete parameter constraints
+        full_grid_size = np.prod(levels)
+        target_samples = max(2, int(np.sqrt(full_grid_size)))
+        
+        # Constrain by minimum parameter levels to ensure all discrete values are reachable
+        num_experiments = min(target_samples, min_levels)
+        
+        # Ensure we actually reduce the grid size
+        num_experiments = min(num_experiments, full_grid_size - 1)
+        
+        self.logger.debug(f"Creating LHS reduced grid with {num_experiments} experiments")
+        self.logger.debug(f"Parameter levels: {levels}, full grid size: {full_grid_size}")
 
-        # Create the reduced parameter combinations
+        # Generate Latin Hypercube Samples in [0,1] space
+        num_dimensions = len(param_names)
+        lhs_samples = self._generate_latin_hypercube_samples(num_dimensions, num_experiments)
+        
+        # Convert LHS samples to discrete parameter indices
         reduced_grid = []
-        self.logger.debug(f"Creating reduced grid with {num_experiments} experiments")
-
-        # Create set to track seen combinations
         seen_combinations = set()
-
-        # Generate full ParameterGrid for validation
-        full_grid = list(ParameterGrid(variable_params))
-
-        for i in range(num_experiments):
+        
+        for i, sample in enumerate(lhs_samples):
             combination = fixed_params.copy()
-            self.logger.debug(f"Creating combination {i+1}")
-
-            for param, values in variable_params.items():
-                idx = i % len(values)
+            self.logger.debug(f"Creating LHS combination {i+1}")
+            
+            for j, param in enumerate(param_names):
+                values = variable_params[param]
+                # Map [0,1] sample to discrete parameter index
+                idx = int(sample[j] * len(values))
+                # Ensure idx is within bounds (handle edge case where sample == 1.0)
+                idx = min(idx, len(values) - 1)
                 combination[param] = values[idx]
-                self.logger.debug(f"  {param} = {values[idx]} (index {idx})")
-
-            # Create hashable version of combination for duplicate checking
+                self.logger.debug(f"  {param} = {values[idx]} (LHS index {idx})")
+            
+            # Check for duplicates using hash
             combination_hash = joblib.hash(combination)
-
-            # Validate combination exists in full grid and isn't a duplicate
             if combination_hash not in seen_combinations:
-                # Extract only variable parameters for validation against full grid
-                variable_combination = {
-                    k: v for k, v in combination.items() if k in variable_params
-                }
-                if variable_combination in full_grid:
-                    reduced_grid.append(combination)
-                    seen_combinations.add(combination_hash)
-                    self.logger.debug(f"Combination {i+1} complete: {combination}")
-                else:
-                    self.logger.warning(f"Invalid combination skipped: {combination}")
+                reduced_grid.append(combination)
+                seen_combinations.add(combination_hash)
+                self.logger.debug(f"LHS combination {i+1} complete: {combination}")
             else:
-                self.logger.debug(f"Duplicate combination skipped: {combination}")
+                self.logger.debug(f"Duplicate LHS combination skipped: {combination}")
 
-        # Calculate full grid size using only variable parameters
-        full_grid_size = len(list(ParameterGrid(variable_params)))
+        # Calculate full grid size using only variable parameters for validation
+        full_grid_size_check = len(list(ParameterGrid(variable_params)))
 
-        # Assert that our reduced grid is indeed smaller
+        # Assert that our reduced grid is indeed smaller than the full grid
         assert (
-            len(reduced_grid) < full_grid_size
-        ), f"Reduced grid size {len(reduced_grid)} not smaller than full grid size {full_grid_size}"
+            len(reduced_grid) < full_grid_size_check
+        ), f"LHS reduced grid size {len(reduced_grid)} not smaller than full grid size {full_grid_size_check}"
 
         return reduced_grid
 
@@ -157,7 +190,7 @@ if __name__ == "__main__":
         "verbose": [True],  # also handles length 1 lists for fixed params
     }
 
-    converter = TaguchiGridSearchConverter()
+    converter = GridSearchReductor()
     reduced = converter.fit_transform(sample_grid)
 
     # or similarly:
